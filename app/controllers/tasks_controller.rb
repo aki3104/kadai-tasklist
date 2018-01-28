@@ -8,7 +8,7 @@ class TasksController < ApplicationController
       @user = current_user
       @task = current_user.tasks.build  # form_for 用
       @tasks = current_user.tasks.order('created_at DESC').page(params[:page])
-    end
+     end
   end
   
   def show
@@ -46,7 +46,6 @@ class TasksController < ApplicationController
   end
   
   def destroy
-    @task = Task.find(params[:id])
     @task.destroy
     
     flash[:success] = 'Tastは正常に削除されました'
@@ -63,7 +62,7 @@ def task_params
   params.require(:task).permit(:content, :status)
 end
 
- def correct_user
+  def correct_user
     @task = current_user.tasks.find_by(id: params[:id])
     unless @task
       redirect_to root_url

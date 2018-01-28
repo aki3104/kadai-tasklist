@@ -1,13 +1,18 @@
 class UsersController < ApplicationController
   before_action :require_user_logged_in, only: [:index, :show]
-  
+
   def index
   end
 
   def show
-    @user = User.find(params[:id])
-    @tasks = @user.tasks.order('created_at DESC').page(params[:page])
-    counts(@user)
+    @user = User.find_by(id: params[:id])
+     if @user == current_user
+       @tasks = @user.tasks.order('created_at DESC').page(params[:page])
+       counts(@user)
+     else
+      flash[:danger]= 'ログインユーザではありません'
+      redirect_to tasks_path 
+     end
   end
 
   def new
@@ -16,7 +21,6 @@ class UsersController < ApplicationController
 
   def create
      @user = User.new(user_params)
-
     if @user.save
       flash[:success] = 'ユーザを登録しました。'
       redirect_to @user
@@ -31,5 +35,4 @@ class UsersController < ApplicationController
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
   end
-  
 end
